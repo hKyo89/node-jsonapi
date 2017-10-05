@@ -1,9 +1,9 @@
 # node-jsonapi
 
-This library help you to build and parse JSON response using JSON API format.
+This library helps you to build and parse JSON response using JSON API format.
 
 ## Initialization
-```lang=javascript
+``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi(options);
 ```
@@ -14,13 +14,13 @@ const API = new JSONApi(options);
 |`version`|no|string|JSON API version. Currently only support JSON API v1.0
 
 #### Initialization without options
-```lang=javascript
+``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 ```
 
 #### Initialization without options
-```lang=javascript
+``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi({
   version: '1.0',
@@ -32,7 +32,7 @@ const API = new JSONApi({
 
 ### build()
 Build method will return a promise.
-```
+``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 
@@ -82,7 +82,7 @@ API.build(options)
 ```
 
 **Response**
-```lang=json
+``` json
 {
   "jsonapi": {
     "version": "1.0"
@@ -162,7 +162,7 @@ API.build(options)
 |*any keys*|no|any|Any data keys
 
 **Example of single data structure**
-```lang=javascript
+``` js
 let options = {
   //...
   data: {
@@ -174,7 +174,7 @@ let options = {
 ```
 
 **Example of multiple data structure**
-```lang=javascript
+``` js
 let options = {
   //...
   data = [
@@ -197,7 +197,7 @@ This is the relationship scheme
 |-- `isId`|yes|Each relationship requires one property to be set as id
 
 **Example**
-```lang=javascript
+``` js
 let options = {
   //...
   relationships: {
