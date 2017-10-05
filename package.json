@@ -1,0 +1,17 @@
+{
+  "name": "node-jsonapi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/hkyo89/node-jsonapi",
+  "author": "Argi Karunia",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon example.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
