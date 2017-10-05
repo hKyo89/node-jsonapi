@@ -211,6 +211,6 @@ let options = {
       name: 'author',
     },
   },
-  /...
+  //...
 };
 ```
