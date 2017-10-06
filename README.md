@@ -34,14 +34,15 @@ const API = new JSONApi({
 
 ## Methods
 - build()
+- error()
 
 ### build()
-Build method will return a promise.
+Build valid JSON API response. Returns a promise.
 ``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 
-// Assuming this is the data from SQL 
+// Assuming this is the data from SQL
 let data = [{
   id: 1,
   title: 'FOO',
@@ -83,7 +84,7 @@ API.build(options)
   })
   .catch((err) => {
     console.log(err);
-  })
+  });
 ```
 
 **Response**
@@ -219,3 +220,57 @@ let options = {
   //...
 };
 ```
+
+### error()
+Build valid JSON API error response. Returns a promise.
+
+``` js
+const JSONApi = require('node-jsonapi');
+const API = new JSONApi();
+
+let errors = [{
+  status: 400,
+  code: 'ERR_API_SET_PROFILE',
+  title: 'Failed to set author profile',
+  detail: 'Missing author name',
+  source: 'profiles.create'
+}];
+
+API.error(errors)
+  .then((data) => {
+    console.log(JSON.stringify(data, null, 2));
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+**Response**
+``` json
+{
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "errors": [
+    {
+      "status": 400,
+      "code": "ERR_API_SET_PROFILE",
+      "title": "Failed to set author profile",
+      "detail": "Missing author name",
+      "source": "profiles.create"
+    }
+  ]
+}
+```
+
+#### Errors structure
+Errors is an Array of error.
+
+**Error**
+|key|required|type|description
+|---|---|---|---
+|`status`|yes|number|HTTP status
+|`code`|yes|string or number|Error code
+|`title`|no|string|Error title
+|`detail`|no|string|Error detail
+|`source`|no|string|Error source
