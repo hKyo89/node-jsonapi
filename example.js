@@ -20,6 +20,13 @@ let data = [{
   userEmail: 'foo@gmail.com',
 }];
 
+let singleData = {
+  id: 1,
+  title: 'FOO',
+  userId: 10,
+  userEmail: 'foo@gmail.com',
+};
+
 let options = {
   type: 'post',
   data: data,

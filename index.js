@@ -15,6 +15,78 @@ class JSONApi {
     return this[buildFn](options);
   }
 
+  _build(row, included, options, reject) {
+    let keys = Object.keys(row);
+    let _included;
+    let relType;
+    let relId;
+
+    let data = {
+      type: options.type,
+    };
+
+    for (let col of keys) {
+
+      if (options.relationships) {
+        if (options.relationships[col]) {
+          if (typeof data.relationships === 'undefined') {
+            data.relationships = {};
+          }
+
+          relType = options.relationships[col].type;
+
+          if (typeof relType === 'undefined') {
+            return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_TYPE');
+          }
+
+          let relName = options.relationships[col].name;
+
+          if (typeof data.relationships[relName] === 'undefined') {
+            if (options.relationships[col].isId) {
+              data.relationships[relName] = { data: {
+                type: relType,
+                id: row[col],
+              } };
+
+              relId = row[col];
+
+              continue;
+            }
+          }
+
+          if (typeof _included === 'undefined') {
+            _included = {};
+          }
+
+          _included[col] = row[col];
+          continue;
+        }
+      }
+
+      data[col] = row[col];
+    }
+
+    if (_included) {
+      if (typeof relId === 'undefined') {
+        return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_ID');
+      }
+
+      if (!_.find(included, { type: relType, id: relId })) {
+        included.push({
+          type: relType,
+          id: relId,
+          attributes: _included,
+        });
+      }
+    }
+
+    if (typeof data.id === 'undefined') {
+      return reject('ERR_JSONAPI_MISSING_BUILD_DATA_ID');
+    }
+
+    return data;
+  }
+
   buildv1_0(options) {
     return new Promise((resolve, reject) => {
       if (typeof options === 'undefined') {
@@ -29,83 +101,15 @@ class JSONApi {
         return reject('ERR_JSONAPI_MISSING_BUILD_DATA');
       }
 
-      options.singleData = options.singleData || false;
-      let data = options.singleData ? {} : [];
+      options.isSingleData = options.isSingleData || false;
+      let buildData = options.isSingleData ? {} : [];
       let included = [];
-      let buildData = [];
 
-      if (data) {
+      if (options.isSingleData) {
+        buildData = this._build(options.data, included, options, reject);
+      } else {
         for (let row of options.data) {
-
-          let _data = {
-            type: options.type,
-          };
-
-          let keys = Object.keys(row);
-          let _included;
-          let relType;
-          let relId;
-
-          for (let col of keys) {
-
-            if (options.relationships) {
-              if (options.relationships[col]) {
-                if (typeof _data.relationships === 'undefined') {
-                  _data.relationships = {};
-                }
-
-                relType = options.relationships[col].type;
-
-                if (typeof relType === 'undefined') {
-                  return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_TYPE');
-                }
-
-                let relName = options.relationships[col].name;
-
-                if (typeof _data.relationships[relName] === 'undefined') {
-                  if (options.relationships[col].isId) {
-                    _data.relationships[relName] = { data: {
-                      type: relType,
-                      id: row[col],
-                    } };
-
-                    relId = row[col];
-
-                    continue;
-                  }
-                }
-
-                if (typeof _included === 'undefined') {
-                  _included = {};
-                }
-
-                _included[col] = row[col];
-                continue;
-              }
-            }
-
-            _data[col] = row[col];
-          }
-
-          if (_included) {
-            if (typeof relId === 'undefined') {
-              return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_ID');
-            }
-
-            if (!_.find(included, { type: relType, id: relId })) {
-              included.push({
-                type: relType,
-                id: relId,
-                attributes: _included,
-              });
-            }
-          }
-
-          if (typeof _data.id === 'undefined') {
-            return reject('ERR_JSONAPI_MISSING_BUILD_DATA_ID');
-          }
-
-          buildData.push(_data);
+          buildData.push(this._build(row, included, options, reject));
         }
       }
 
