@@ -2,6 +2,11 @@
 
 This library helps you to build and parse JSON response using JSON API format.
 
+## Installation
+``` sh
+$ yarn add node-jsonapi
+```
+
 ## Initialization
 ``` js
 const JSONApi = require('node-jsonapi');
