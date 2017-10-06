@@ -6,16 +6,78 @@ class JSONApi {
     this.version = options.jsonapi || '1.0';
   }
 
-  build(options) {
-    let buildFn = `buildv${this.version.replace(/\./g, '_')}`;
-      if (typeof this[buildFn] === 'undefined') {
-        return Promise.reject('ERR_JSONAPI_UNSUPPORTED_VERSION');
-      }
+  _fn(fnName, options) {
+    let fn = `${fnName}v${this.version.replace(/\./g, '_')}`;
+    if (typeof this[fn] === 'undefined') {
+      return Promise.reject('ERR_JSONAPI_UNSUPPORTED_VERSION');
+    }
 
-    return this[buildFn](options);
+    return this[fn](options);
   }
 
-  _build(row, included, options, reject) {
+  build(options) {
+    return this._fn('build', options);
+  }
+
+  errorv1_0(errors) {
+    return new Promise((resolve, reject) => {
+      if (_.isUndefined(errors)) {
+        return reject('ERR_JSONAPI_ERROR_MISSING_ERRORS_DATA');
+      }
+
+      if (!_.isArray(errors)) {
+        return reject('ERR_JSONAPI_ERROR_INVALID_ERRORS_DATA');
+      }
+
+      let results = {
+        jsonapi: {
+          version: this.version,
+        },
+        errors: [],
+      };
+
+      for (let error of errors) {
+        let _error = {};
+
+        if (!_.isPlainObject(error)) {
+          return reject('ERR_JSONAPI_ERROR_INVALID_ERROR_DATA');
+        }
+
+        if (_.isUndefined(error.status)) {
+          return reject('ERR_JSONAPI_ERROR_MISSING_STATUS');
+        }
+
+        if (_.isUndefined(error.code)) {
+          return reject('ERR_JSONAPI_ERROR_MISSING_CODE');
+        }
+
+        _error.status = error.status;
+        _error.code = error.code;
+
+        if (error.title) {
+          _error.title = error.title;
+        }
+
+        if (error.detail) {
+          _error.detail = error.detail;
+        }
+
+        if (error.source) {
+          _error.source = error.source;
+        }
+
+        results.errors.push(_error);
+      }
+
+      resolve(results);
+    });
+  }
+
+  error(options) {
+    return this._fn('error', options);
+  }
+
+  _buildv1_0(row, included, options, reject) {
     let keys = Object.keys(row);
     let _included;
     let relType;
@@ -106,10 +168,10 @@ class JSONApi {
       let included = [];
 
       if (options.isSingleData) {
-        buildData = this._build(options.data, included, options, reject);
+        buildData = this._buildv1_0(options.data, included, options, reject);
       } else {
         for (let row of options.data) {
-          buildData.push(this._build(row, included, options, reject));
+          buildData.push(this._buildv1_0(row, included, options, reject));
         }
       }
 

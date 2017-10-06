@@ -43,6 +43,14 @@ let options = {
   }
 };
 
+let errors = [{
+  status: 400,
+  code: 'ERR_API_SET_PROFILE',
+  title: 'Failed to set author profile',
+  detail: 'Missing author name',
+  source: 'profiles.create'
+}];
+
 API.build(options)
   .then((data) => {
     console.log(JSON.stringify(data, null, 2));
