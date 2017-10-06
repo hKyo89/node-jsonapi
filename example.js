@@ -31,16 +31,13 @@ let options = {
   type: 'post',
   data: data,
   relationships: {
-    userId: {
-      name: 'author',
+    author: {
       type: 'user',
-      isId: true,
+      attributes: [ 'userId', 'userEmail' ],
+      id: 'userId',
+      singular: true,
     },
-    userEmail: {
-      name: 'author',
-      type: 'user'
-    }
-  }
+  },
 };
 
 let errors = [{
@@ -58,47 +55,56 @@ let json = {
   "data": [
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 1,
       "attributes": {
         "title": "FOO"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 10
-          }
-        }
       }
     },
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 12,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 2,
       "attributes": {
         "title": "BAR"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 12
-          }
-        }
       }
     },
     {
       "type": "post",
-      "id": 3,
-      "attributes": {
-        "title": "FOOBAR"
-      },
       "relationships": {
         "author": {
           "data": {
-            "type": "user",
-            "id": 10
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
           }
         }
+      },
+      "id": 3,
+      "attributes": {
+        "title": "FOOBAR"
       }
     }
   ],

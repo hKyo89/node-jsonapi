@@ -53,7 +53,7 @@ const API = new JSONApi({
 
 ### build()
 
-Build valid JSON API response. Returns a promise.
+Build valid JSON API response. Return a promise.
 
 ```javascript
 const JSONApi = require('node-jsonapi');
@@ -83,16 +83,13 @@ let options = {
   type: 'post',
   data: data,
   relationships: {
-    userId: {
-      name: 'author',
+    author: {
       type: 'user',
-      isId: true,
+      attributes: [ 'userId', 'userEmail' ],
+      id: 'userId',
+      singular: true,
     },
-    userEmail: {
-      name: 'author',
-      type: 'user'
-    }
-  }
+  },
 };
 
 API.build(options)
@@ -104,7 +101,7 @@ API.build(options)
   });
 ```
 
-**Response**
+**Resolved object**
 
 ```json
 {
@@ -114,47 +111,56 @@ API.build(options)
   "data": [
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 1,
       "attributes": {
         "title": "FOO"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 10
-          }
-        }
       }
     },
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 12,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 2,
       "attributes": {
         "title": "BAR"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 12
-          }
-        }
       }
     },
     {
       "type": "post",
-      "id": 3,
-      "attributes": {
-        "title": "FOOBAR"
-      },
       "relationships": {
         "author": {
           "data": {
-            "type": "user",
-            "id": 10
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
           }
         }
+      },
+      "id": 3,
+      "attributes": {
+        "title": "FOOBAR"
       }
     }
   ],
@@ -174,7 +180,7 @@ API.build(options)
       }
     }
   ]
-};
+}
 ```
 
 #### Options
@@ -184,7 +190,7 @@ key             | required | type    | description
 `type`          | yes      | string  | Response data type
 `data`          | yes      | object  | Response data. _See data structure below_
 `relationships` | no       | object  | Data relationship scheme. _See relationships structure below_
-`isSingleData`  | no       | boolean | Whether it's a single or multiple data
+`singular`  | no       | boolean | Whether it's a single or multiple data
 
 #### Data structure
 
@@ -225,10 +231,11 @@ This is the relationship scheme
 
 key       | required | type    | description
 --------- | -------- | ------- | -------------------------------------------------------
-`key`     | yes      | string  | Relationship key from the data
--- `type` | yes      | string  | Relationship type
--- `name` | yes      | string  | Relationship name
--- `isId` | yes      | boolean | Each relationship requires one property to be set as id
+`name`     | yes      | string  | Relationship name
+/`type` | yes      | string  | Relationship type
+/`id` | yes      | string  | Relationship id
+/`attributes` | yes      | array | Relationship attributes
+/`singular` | no      | boolean | Whether the relationship data is singular
 
 **Example**
 
@@ -236,14 +243,11 @@ key       | required | type    | description
 let options = {
   //...
   relationships: {
-    userId: {
+    author: {
       type: 'user',
-      name: 'author',
-      isId: true,
-    },
-    userEmail: {
-      type: 'user',
-      name: 'author',
+      attributes: [ 'userId', 'userEmail' ],
+      id: 'userId',
+      singular: true,
     },
   },
   //...
@@ -254,7 +258,7 @@ let options = {
 
 ### error()
 
-Build valid JSON API error response. Returns a promise.
+Build valid JSON API error response. Return a promise.
 
 ```javascript
 const JSONApi = require('node-jsonapi');
@@ -277,7 +281,7 @@ API.error(errors)
   });
 ```
 
-**Response**
+**Resolved object**
 
 ```json
 {
@@ -314,7 +318,7 @@ key      | required | type             | description
 
 ### parse()
 
-Parse valid JSON API response to flat plain object. Returns a promise.
+Parse valid JSON API response to flat plain object. Return a promise.
 
 ```javascript
 const JSONApi = require('node-jsonapi');
@@ -327,47 +331,56 @@ const jsonData = {
   "data": [
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 1,
       "attributes": {
         "title": "FOO"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 10
-          }
-        }
       }
     },
     {
       "type": "post",
+      "relationships": {
+        "author": {
+          "data": {
+            "id": 12,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
+          }
+        }
+      },
       "id": 2,
       "attributes": {
         "title": "BAR"
-      },
-      "relationships": {
-        "author": {
-          "data": {
-            "type": "user",
-            "id": 12
-          }
-        }
       }
     },
     {
       "type": "post",
-      "id": 3,
-      "attributes": {
-        "title": "FOOBAR"
-      },
       "relationships": {
         "author": {
           "data": {
-            "type": "user",
-            "id": 10
+            "id": 10,
+            "type": "user"
+          },
+          "meta": {
+            "singular": true
           }
         }
+      },
+      "id": 3,
+      "attributes": {
+        "title": "FOOBAR"
       }
     }
   ],
@@ -398,40 +411,34 @@ API.parse(jsonData)
   });
 ```
 
-**Response**
+**Resolved object**
 
 ```json
 {
   "data": [
     {
+      "author": {
+        "userId": 10,
+        "userEmail": "foo@gmail.com"
+      },
       "postId": 1,
-      "title": "FOO",
-      "author": [
-        {
-          "userId": 10,
-          "userEmail": "foo@gmail.com"
-        }
-      ]
+      "title": "FOO"
     },
     {
+      "author": {
+        "userId": 12,
+        "userEmail": "bar@gmail.com"
+      },
       "postId": 2,
-      "title": "BAR",
-      "author": [
-        {
-          "userId": 12,
-          "userEmail": "bar@gmail.com"
-        }
-      ]
+      "title": "BAR"
     },
     {
+      "author": {
+        "userId": 10,
+        "userEmail": "foo@gmail.com"
+      },
       "postId": 3,
-      "title": "FOOBAR",
-      "author": [
-        {
-          "userId": 10,
-          "userEmail": "foo@gmail.com"
-        }
-      ]
+      "title": "FOOBAR"
     }
   ]
 }

@@ -91,13 +91,13 @@ class JSONApi {
         return reject('ERR_JSONAPI_MISSING_BUILD_DATA');
       }
 
-      options.isSingleData = options.isSingleData || false;
-      let buildData = options.isSingleData
+      options.singular = options.singular || false;
+      let buildData = options.singular
         ? {}
         : [];
       let included = [];
 
-      if (options.isSingleData) {
+      if (options.singular) {
         buildData = this._buildv1_0(options.data, included, options, reject);
       } else {
         for (let row of options.data) {
@@ -122,50 +122,49 @@ class JSONApi {
 
   _buildv1_0(row, included, options, reject) {
     let keys = Object.keys(row);
-    let _included;
-    let relType;
+    let relNames = Object.keys(options.relationships);
     let relId;
+    let relType;
+    let _included;
 
     let data = {
       type: options.type
     };
 
-    for (let col of keys) {
+    keysLoop : for (let col of keys) {
       if (options.relationships) {
-        if (options.relationships[col]) {
-          if (typeof data.relationships === 'undefined') {
-            data.relationships = {};
-          }
+        if (_.isUndefined(data.relationships)) {
+          data.relationships = {};
+          _included = {};
+        }
 
-          relType = options.relationships[col].type;
+        for (let relName of relNames) {
+          let relScheme = options.relationships[relName];
 
-          if (typeof relType === 'undefined') {
-            return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_TYPE');
-          }
+          if (_.isUndefined(data.relationships[relName])) {
+            data.relationships[relName] = {
+              data: {}
+            };
 
-          let relName = options.relationships[col].name;
+            if (relScheme.singular) {
+              if (_.isUndefined(data.relationships[relName].meta)) {
+                data.relationships[relName].meta = {};
+              }
 
-          if (typeof data.relationships[relName] === 'undefined') {
-            if (options.relationships[col].isId) {
-              data.relationships[relName] = {
-                data: {
-                  type: relType,
-                  id: row[col]
-                }
-              };
-
-              relId = row[col];
-
-              continue;
+              data.relationships[relName].meta.singular = true;
             }
           }
 
-          if (typeof _included === 'undefined') {
-            _included = {};
-          }
+          if (relScheme.attributes.indexOf(col) >= 0) {
+            if (relScheme.id === col) {
+              data.relationships[relName].data.id = relId = row[col];
+              data.relationships[relName].data.type = relType = relScheme.type;
+              continue keysLoop;
+            }
 
-          _included[col] = row[col];
-          continue;
+            _included[col] = row[col];
+            continue keysLoop;
+          }
         }
       }
 
@@ -243,10 +242,10 @@ class JSONApi {
     return Promise.resolve(results);
   }
 
-  _parse(row, json, results, isSingleData, isChild) {
+  _parse(row, json, results, singular, isChild) {
     if (!isChild) {
       if (_.isUndefined(results.data)) {
-        if (isSingleData) {
+        if (singular) {
           results.data = {};
         } else {
           results.data = [];
@@ -284,6 +283,7 @@ class JSONApi {
 
         for (let relType of relKeys) {
           let relData = row[col][relType].data;
+          let relMeta = row[col][relType].meta;
 
           if (_.isUndefined(relData.type)) {
             return Promise.reject('ERR_JSONAPI_PARSE_MISSING_RELATIONSHIP_TYPE');
@@ -303,12 +303,18 @@ class JSONApi {
           }
 
           this._parse(includedData, json, _data[relType], false, true);
+
+          if (relMeta.singular) {
+            _data[relType] = _data[relType][0];
+          }
         }
       }
     }
 
+
+
     if (!isChild) {
-      if (isSingleData) {
+      if (singular) {
         results.data = _data;
       } else {
         results.data.push(_data);
