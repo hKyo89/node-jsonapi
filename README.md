@@ -24,7 +24,7 @@ const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 ```
 
-#### Initialization without options
+#### Initialization with options
 ``` js
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi({
