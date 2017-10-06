@@ -1,10 +1,11 @@
 {
   "name": "node-jsonapi",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "index.js",
   "repository": "https://github.com/hkyo89/node-jsonapi",
   "author": "Argi Karunia",
   "license": "MIT",
+  "engines" : { "node" : ">=8.0.0" },
   "scripts": {
     "dev": "nodemon example.js"
   },
