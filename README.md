@@ -1,44 +1,61 @@
 # node-jsonapi
 
-This library helps you to build and parse JSON response using JSON API format.
+This library helps you build and parse JSON response using JSON API format.
+
+--------------------------------------------------------------------------------
 
 ## Installation
-``` sh
+
+```sh
 $ yarn add node-jsonapi
 ```
 
+--------------------------------------------------------------------------------
+
 ## Initialization
-``` js
+
+```javascript
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi(options);
 ```
 
 ### Options
-|key|required|type|description
-|---|---|---|---
-|`version`|no|string|JSON API version. Currently only support JSON API v1.0
+
+key       | required | type   | description
+--------- | -------- | ------ | ------------------------------------------------------
+`version` | no       | string | JSON API version. Currently only support JSON API v1.0
 
 #### Initialization without options
-``` js
+
+```javascript
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 ```
 
 #### Initialization with options
-``` js
+
+```javascript
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi({
   version: '1.0',
 });
 ```
 
+--------------------------------------------------------------------------------
+
 ## Methods
+
 - build()
 - error()
+- parse()
+
+--------------------------------------------------------------------------------
 
 ### build()
+
 Build valid JSON API response. Returns a promise.
-``` js
+
+```javascript
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 
@@ -88,7 +105,8 @@ API.build(options)
 ```
 
 **Response**
-``` json
+
+```json
 {
   "jsonapi": {
     "version": "1.0"
@@ -97,7 +115,9 @@ API.build(options)
     {
       "type": "post",
       "id": 1,
-      "title": "FOO",
+      "attributes": {
+        "title": "FOO"
+      },
       "relationships": {
         "author": {
           "data": {
@@ -110,7 +130,9 @@ API.build(options)
     {
       "type": "post",
       "id": 2,
-      "title": "BAR",
+      "attributes": {
+        "title": "BAR"
+      },
       "relationships": {
         "author": {
           "data": {
@@ -123,7 +145,9 @@ API.build(options)
     {
       "type": "post",
       "id": 3,
-      "title": "FOOBAR",
+      "attributes": {
+        "title": "FOOBAR"
+      },
       "relationships": {
         "author": {
           "data": {
@@ -150,25 +174,28 @@ API.build(options)
       }
     }
   ]
-}
+};
 ```
 
 #### Options
-|key|required|type|description
-|---|---|---|---
-|`type`|yes|string|Response data type
-|`data`|yes|object|Response data. *See data structure below*
-|`relationships`|no|object|Data relationship scheme. *See relationships structure below*
-|`isSingleData`|no|boolean|Whether it's a single or multiple data
+
+key             | required | type    | description
+--------------- | -------- | ------- | -------------------------------------------------------------
+`type`          | yes      | string  | Response data type
+`data`          | yes      | object  | Response data. _See data structure below_
+`relationships` | no       | object  | Data relationship scheme. _See relationships structure below_
+`isSingleData`  | no       | boolean | Whether it's a single or multiple data
 
 #### Data structure
-|key|required|type|description
-|---|---|---|---
-|`id`|yes|string or number|Data id
-|*any keys*|no|any|Any data keys
+
+key        | required | type             | description
+---------- | -------- | ---------------- | -------------
+`id`       | yes      | string or number | Data id
+_any keys_ | no       | any              | Any data keys
 
 **Example of single data structure**
-``` js
+
+```javascript
 let options = {
   //...
   data: {
@@ -180,7 +207,8 @@ let options = {
 ```
 
 **Example of multiple data structure**
-``` js
+
+```javascript
 let options = {
   //...
   data = [
@@ -189,21 +217,22 @@ let options = {
   ],
   //...
 };
-...
 ```
 
-#### Relationships structure *(optional)*
+#### Relationships structure _(optional)_
+
 This is the relationship scheme
 
-|key|required|type|description
-|---|---|---|---
-|`key`|yes|string|Relationship key from the data
-|-- `type`|yes|string|Relationship type
-|-- `name`|yes|Relationship name
-|-- `isId`|yes|Each relationship requires one property to be set as id
+key       | required | type    | description
+--------- | -------- | ------- | -------------------------------------------------------
+`key`     | yes      | string  | Relationship key from the data
+-- `type` | yes      | string  | Relationship type
+-- `name` | yes      | string  | Relationship name
+-- `isId` | yes      | boolean | Each relationship requires one property to be set as id
 
 **Example**
-``` js
+
+```javascript
 let options = {
   //...
   relationships: {
@@ -221,10 +250,13 @@ let options = {
 };
 ```
 
+--------------------------------------------------------------------------------
+
 ### error()
+
 Build valid JSON API error response. Returns a promise.
 
-``` js
+```javascript
 const JSONApi = require('node-jsonapi');
 const API = new JSONApi();
 
@@ -246,7 +278,8 @@ API.error(errors)
 ```
 
 **Response**
-``` json
+
+```json
 {
   "jsonapi": {
     "version": "1.0"
@@ -264,13 +297,142 @@ API.error(errors)
 ```
 
 #### Errors structure
+
 Errors is an Array of error.
 
 **Error**
-|key|required|type|description
-|---|---|---|---
-|`status`|yes|number|HTTP status
-|`code`|yes|string or number|Error code
-|`title`|no|string|Error title
-|`detail`|no|string|Error detail
-|`source`|no|string|Error source
+
+key      | required | type             | description
+-------- | -------- | ---------------- | ------------
+`status` | yes      | number           | HTTP status
+`code`   | yes      | string or number | Error code
+`title`  | no       | string           | Error title
+`detail` | no       | string           | Error detail
+`source` | no       | string           | Error source
+
+--------------------------------------------------------------------------------
+
+### parse()
+
+Parse valid JSON API response to flat plain object. Returns a promise.
+
+```javascript
+const JSONApi = require('node-jsonapi');
+const API = new JSONApi();
+
+const jsonData = {
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "data": [
+    {
+      "type": "post",
+      "id": 1,
+      "attributes": {
+        "title": "FOO"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 10
+          }
+        }
+      }
+    },
+    {
+      "type": "post",
+      "id": 2,
+      "attributes": {
+        "title": "BAR"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 12
+          }
+        }
+      }
+    },
+    {
+      "type": "post",
+      "id": 3,
+      "attributes": {
+        "title": "FOOBAR"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 10
+          }
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "user",
+      "id": 10,
+      "attributes": {
+        "userEmail": "foo@gmail.com"
+      }
+    },
+    {
+      "type": "user",
+      "id": 12,
+      "attributes": {
+        "userEmail": "bar@gmail.com"
+      }
+    }
+  ]
+};
+
+API.parse(jsonData)
+  .then((data) => {
+    console.log(JSON.stringify(data, null, 2));
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+**Response**
+
+```json
+{
+  "data": [
+    {
+      "postId": 1,
+      "title": "FOO",
+      "author": [
+        {
+          "userId": 10,
+          "userEmail": "foo@gmail.com"
+        }
+      ]
+    },
+    {
+      "postId": 2,
+      "title": "BAR",
+      "author": [
+        {
+          "userId": 12,
+          "userEmail": "bar@gmail.com"
+        }
+      ]
+    },
+    {
+      "postId": 3,
+      "title": "FOOBAR",
+      "author": [
+        {
+          "userId": 10,
+          "userEmail": "foo@gmail.com"
+        }
+      ]
+    }
+  ]
+}
+```

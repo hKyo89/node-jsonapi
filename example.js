@@ -51,10 +51,80 @@ let errors = [{
   source: 'profiles.create'
 }];
 
-API.build(options)
+let json = {
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "data": [
+    {
+      "type": "post",
+      "id": 1,
+      "attributes": {
+        "title": "FOO"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 10
+          }
+        }
+      }
+    },
+    {
+      "type": "post",
+      "id": 2,
+      "attributes": {
+        "title": "BAR"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 12
+          }
+        }
+      }
+    },
+    {
+      "type": "post",
+      "id": 3,
+      "attributes": {
+        "title": "FOOBAR"
+      },
+      "relationships": {
+        "author": {
+          "data": {
+            "type": "user",
+            "id": 10
+          }
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "user",
+      "id": 10,
+      "attributes": {
+        "userEmail": "foo@gmail.com"
+      }
+    },
+    {
+      "type": "user",
+      "id": 12,
+      "attributes": {
+        "userEmail": "bar@gmail.com"
+      }
+    }
+  ]
+};
+
+// API.build(options)
+API.parse(json)
   .then((data) => {
     console.log(JSON.stringify(data, null, 2));
   })
   .catch((err) => {
     console.log(err);
-  })
+  });
