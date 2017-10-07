@@ -122,7 +122,12 @@ class JSONApi {
 
   _buildv1_0(row, included, options, reject) {
     let keys = Object.keys(row);
-    let relNames = Object.keys(options.relationships);
+    let relNames;
+
+    if (options.relationships) {
+      relNames = Object.keys(options.relationships);
+    }
+
     let relId = 'id';
     let relType;
     let _included;
