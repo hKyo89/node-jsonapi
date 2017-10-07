@@ -2,26 +2,26 @@ const JSONApi = require('./index');
 const API = new JSONApi();
 
 let data = [{
-  id: 1,
+  postId: 1,
   title: 'FOO',
   userId: 10,
   userEmail: 'foo@gmail.com',
 },
 {
-  id: 2,
+  postId: 2,
   title: 'BAR',
   userId: 12,
   userEmail: 'bar@gmail.com',
 },
 {
-  id: 3,
+  postId: 3,
   title: 'FOOBAR',
   userId: 10,
   userEmail: 'foo@gmail.com',
 }];
 
 let singleData = {
-  id: 1,
+  postId: 1,
   title: 'FOO',
   userId: 10,
   userEmail: 'foo@gmail.com',
@@ -29,6 +29,7 @@ let singleData = {
 
 let options = {
   type: 'post',
+  id: 'postId',
   data: data,
   relationships: {
     author: {
@@ -126,8 +127,8 @@ let json = {
   ]
 };
 
-// API.build(options)
-API.parse(json)
+API.build(options)
+// API.parse(json)
   .then((data) => {
     console.log(JSON.stringify(data, null, 2));
   })

@@ -1,6 +1,6 @@
 {
   "name": "node-jsonapi",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "main": "index.js",
   "repository": "https://github.com/hkyo89/node-jsonapi",
   "author": "Argi Karunia",

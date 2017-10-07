@@ -177,7 +177,7 @@ class JSONApi {
         }
       }
 
-      if (col.toLowerCase() === 'id' || col.toLowerCase() === idKey) {
+      if (col.toLowerCase() === 'id' || col === idKey) {
         data.id = row[col];
         continue;
       }
