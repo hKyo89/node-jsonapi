@@ -93,11 +93,10 @@ let options = {
 };
 
 API.build(options)
-  .then((data) => {
-    console.log(JSON.stringify(data, null, 2));
-  })
+  .then(res.json)
   .catch((err) => {
-    console.log(err);
+    res.status(400);
+    res.json(err);
   });
 ```
 
@@ -274,11 +273,10 @@ let errors = [{
 }];
 
 API.error(errors)
-  .then((data) => {
-    console.log(JSON.stringify(data, null, 2));
-  })
+  .then(res.json)
   .catch((err) => {
-    console.log(err);
+    res.status(400);
+    res.json(err);
   });
 ```
 
@@ -404,11 +402,10 @@ const jsonData = {
 };
 
 API.parse(jsonData)
-  .then((data) => {
-    console.log(JSON.stringify(data, null, 2));
-  })
+  .then(res.json)
   .catch((err) => {
-    console.log(err);
+    res.status(400);
+    res.json(err);
   });
 ```
 
