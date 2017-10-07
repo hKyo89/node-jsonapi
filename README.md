@@ -188,9 +188,10 @@ API.build(options)
 key             | required | type    | description
 --------------- | -------- | ------- | -------------------------------------------------------------
 `type`          | yes      | string  | Response data type
+`id`            | no       | string  | Key for data id when id key doesn't exist
 `data`          | yes      | object  | Response data. _See data structure below_
 `relationships` | no       | object  | Data relationship scheme. _See relationships structure below_
-`singular`  | no       | boolean | Whether it's a single or multiple data
+`singular`      | no       | boolean | Whether it's a single or multiple data
 
 #### Data structure
 
@@ -229,13 +230,13 @@ let options = {
 
 This is the relationship scheme
 
-key       | required | type    | description
---------- | -------- | ------- | -------------------------------------------------------
-`name`     | yes      | string  | Relationship name
-/`type` | yes      | string  | Relationship type
-/`id` | yes      | string  | Relationship id
-/`attributes` | yes      | array | Relationship attributes
-/`singular` | no      | boolean | Whether the relationship data is singular
+key           | required | type    | description
+------------- | -------- | ------- | -----------------------------------------
+`name`        | yes      | string  | Relationship name
+/`type`       | yes      | string  | Relationship type
+/`id`         | yes      | string  | Relationship id
+/`attributes` | yes      | array   | Relationship attributes
+/`singular`   | no       | boolean | Whether the relationship data is singular
 
 **Example**
 

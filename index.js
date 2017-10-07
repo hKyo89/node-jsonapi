@@ -123,13 +123,22 @@ class JSONApi {
   _buildv1_0(row, included, options, reject) {
     let keys = Object.keys(row);
     let relNames = Object.keys(options.relationships);
-    let relId;
+    let relId = 'id';
     let relType;
     let _included;
+    let idKey;
 
     let data = {
       type: options.type
     };
+
+    if (keys.indexOf('id') < 0) {
+      if (_.isUndefined(options.id)) {
+        return reject('ERR_JSONAPI_MISSING_DATA_ID');
+      }
+
+      idKey = options.id;
+    }
 
     keysLoop : for (let col of keys) {
       if (options.relationships) {
@@ -168,7 +177,7 @@ class JSONApi {
         }
       }
 
-      if (col.toLowerCase() === 'id') {
+      if (col.toLowerCase() === 'id' || col.toLowerCase() === idKey) {
         data.id = row[col];
         continue;
       }
@@ -311,8 +320,6 @@ class JSONApi {
       }
     }
 
-
-
     if (!isChild) {
       if (singular) {
         results.data = _data;
@@ -323,7 +330,6 @@ class JSONApi {
       results.push(_data);
     }
   }
-
 }
 
 module.exports = JSONApi;
