@@ -192,8 +192,19 @@ class JSONApi {
 
                   _relData[relName].data.id = relId = rel.id;
                   _relData[relName].data.type = relType = relScheme.type;
-                  _included[col] = rel;
 
+                  // TODO: Refactor to clean logic
+                  if (_.isPlainObject(_included)) {
+                    _included = [];
+                  }
+
+                  let _includedData = {
+                    id: relId,
+                    data: {}
+                  };
+                  _includedData.data = rel;
+
+                  _included.push(_includedData);
                   data.relationships.push(_relData)
                 }
               }
@@ -230,15 +241,30 @@ class JSONApi {
     }
 
     if (_included) {
-      if (typeof relId === 'undefined') {
-        return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_ID');
+      if (_.isPlainObject(_included)) {
+        if (typeof relId === 'undefined') {
+          return reject('ERR_JSONAPI_MISSING_BUILD_RELATIONSHIP_ID');
+        }
+
+        if (!_.find(included, {
+          type: relType,
+          id: relId
+        })) {
+          included.push({type: relType, id: relId, attributes: _included});
+        }
       }
 
-      if (!_.find(included, {
-        type: relType,
-        id: relId
-      })) {
-        included.push({type: relType, id: relId, attributes: _included});
+      if (_.isArray(_included)) {
+        for (let _includedData of _included) {
+          relId = _includedData.id;
+
+          if (!_.find(included, {
+            type: relType,
+            id: relId
+          })) {
+            included.push({type: relType, id: relId, attributes: _includedData});
+          }
+        }
       }
     }
 

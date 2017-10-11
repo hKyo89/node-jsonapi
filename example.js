@@ -7,10 +7,10 @@ let dataSequelize = [
     title: 'FOO',
     author: [
       {
-        id: 10,
+        id: 20,
         userEmail: 'foo@gmail.com'
       }, {
-        id: 11,
+        id: 21,
         userEmail: 'foo@gmail.com'
       }
     ]
@@ -64,10 +64,10 @@ let options = {
   relationships: {
     author: {
       type: 'user',
-      attributes: [
-        'userId', 'userEmail'
-      ],
-      id: 'userId',
+      // attributes: [
+      //   'userId', 'userEmail'
+      // ],
+      // id: 'userId',
       object: true,
       // singular: true
     }
