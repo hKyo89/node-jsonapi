@@ -169,16 +169,51 @@ class JSONApi {
             }
           }
 
-          if (relScheme.attributes.indexOf(col) >= 0) {
-            if (relScheme.id === col) {
-              data.relationships[relName].data.id = relId = row[col];
-              data.relationships[relName].data.type = relType = relScheme.type;
+          if (options.relationships[relName].object) {
+            if (col === relName) {
+              if (_.isPlainObject(row[col])) {
+                data.relationships[relName].data.id = relId = row[col].id;
+                data.relationships[relName].data.type = relType = relScheme.type;
+                _included[col] = row[col];
+              }
+
+              // TODO: Refactor with above
+              if (_.isArray(row[col])) {
+                for (let rel of row[col]) {
+                  // TODO: Refactor to clean logic
+                  if (_.isPlainObject(data.relationships)) {
+                    data.relationships = [];
+                  }
+
+                  let _relData = {};
+                  _relData[relName] = {
+                    data: {}
+                  };
+
+                  _relData[relName].data.id = relId = rel.id;
+                  _relData[relName].data.type = relType = relScheme.type;
+                  _included[col] = rel;
+
+                  data.relationships.push(_relData)
+                }
+              }
+
+              continue keysLoop;
+
+            }
+          } else {
+            if (relScheme.attributes.indexOf(col) >= 0) {
+              if (relScheme.id === col) {
+                data.relationships[relName].data.id = relId = row[col];
+                data.relationships[relName].data.type = relType = relScheme.type;
+                continue keysLoop;
+              }
+
+              _included[col] = row[col];
               continue keysLoop;
             }
-
-            _included[col] = row[col];
-            continue keysLoop;
           }
+
         }
       }
 

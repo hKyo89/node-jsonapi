@@ -1,53 +1,88 @@
 const JSONApi = require('./index');
 const API = new JSONApi();
 
-let data = [{
-  postId: 1,
-  title: 'FOO',
-  userId: 10,
-  userEmail: 'foo@gmail.com',
-},
-{
-  postId: 2,
-  title: 'BAR',
-  userId: 12,
-  userEmail: 'bar@gmail.com',
-},
-{
-  postId: 3,
-  title: 'FOOBAR',
-  userId: 10,
-  userEmail: 'foo@gmail.com',
-}];
+let dataSequelize = [
+  {
+    postId: 1,
+    title: 'FOO',
+    author: [
+      {
+        id: 10,
+        userEmail: 'foo@gmail.com'
+      }, {
+        id: 11,
+        userEmail: 'foo@gmail.com'
+      }
+    ]
+  }, {
+    postId: 2,
+    title: 'BAR',
+    author: {
+      id: 12,
+      userEmail: 'bar@gmail.com'
+    }
+  }, {
+    postId: 3,
+    title: 'FOOBAR',
+    author: {
+      id: 10,
+      userEmail: 'foo@gmail.com'
+    }
+  }
+];
+
+let data = [
+  {
+    postId: 1,
+    title: 'FOO',
+    userId: 10,
+    userEmail: 'foo@gmail.com'
+  }, {
+    postId: 2,
+    title: 'BAR',
+    userId: 12,
+    userEmail: 'bar@gmail.com'
+  }, {
+    postId: 3,
+    title: 'FOOBAR',
+    userId: 10,
+    userEmail: 'foo@gmail.com'
+  }
+];
 
 let singleData = {
   postId: 1,
   title: 'FOO',
   userId: 10,
-  userEmail: 'foo@gmail.com',
+  userEmail: 'foo@gmail.com'
 };
 
 let options = {
   type: 'post',
   id: 'postId',
-  data: data,
+  data: dataSequelize,
   relationships: {
     author: {
       type: 'user',
-      attributes: [ 'userId', 'userEmail' ],
+      attributes: [
+        'userId', 'userEmail'
+      ],
       id: 'userId',
-      singular: true,
-    },
-  },
+      object: true,
+      // singular: true
+    }
+  }
 };
 
-let errors = [{
-  status: 400,
-  code: 'ERR_API_SET_PROFILE',
-  title: 'Failed to set author profile',
-  detail: 'Missing author name',
-  source: 'profiles.create'
-}];
+let errors = [
+  {
+    status: 400,
+    code: 'ERR_API_SET_PROFILE',
+    // title: 'Failed to set author profile',
+    // detail: 'Missing author name',
+    // source: 'profiles.create'
+  }
+];
 
 let json = {
   "jsonapi": {
@@ -71,8 +106,7 @@ let json = {
       "attributes": {
         "title": "FOO"
       }
-    },
-    {
+    }, {
       "type": "post",
       "relationships": {
         "author": {
@@ -89,8 +123,7 @@ let json = {
       "attributes": {
         "title": "BAR"
       }
-    },
-    {
+    }, {
       "type": "post",
       "relationships": {
         "author": {
@@ -116,8 +149,7 @@ let json = {
       "attributes": {
         "userEmail": "foo@gmail.com"
       }
-    },
-    {
+    }, {
       "type": "user",
       "id": 12,
       "attributes": {
@@ -127,11 +159,12 @@ let json = {
   ]
 };
 
+// API.build(options)
 API.build(options)
 // API.parse(json)
+// API.error(errors)
   .then((data) => {
-    console.log(JSON.stringify(data, null, 2));
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  console.log(JSON.stringify(data, null, 2));
+}).catch((err) => {
+  console.log(err);
+});
