@@ -312,14 +312,14 @@ class JSONApi {
         error = this._parse(row, json, results, false);
 
         if (!_.isUndefined(error)) {
-          return error;
+          return Promise.reject(error);
         }
       }
     } else {
       error = this._parse(json.data, json, results, true);
 
       if (!_.isUndefined(error)) {
-        return error;
+        return Promise.reject(error);
       }
     }
 
@@ -369,27 +369,20 @@ class JSONApi {
           let relData = row[col][relType].data;
           let relMeta = row[col][relType].meta;
 
-          if (_.isUndefined(relData.type)) {
-            return Promise.reject('ERR_JSONAPI_PARSE_MISSING_RELATIONSHIP_TYPE');
+          if (_.isPlainObject(relData)) {
+            this._parseRelationships(_data, relType, relMeta, json, relData);
           }
 
-          if (_.isUndefined(relData.id)) {
-            return Promise.reject('ERR_JSONAPI_PARSE_MISSING_RELATIONSHIP_ID');
+          if (_.isArray(relData)) {
+            for (let _relData of relData) {
+              this._parseRelationships(_data, relType, relMeta, json, _relData);
+            }
           }
 
-          let includedData = _.find(json.included, {
-            type: relData.type,
-            id: relData.id
-          });
-
-          if (_.isUndefined(_data[relType])) {
-            _data[relType] = [];
-          }
-
-          this._parse(includedData, json, _data[relType], false, true);
-
-          if (relMeta.singular) {
-            _data[relType] = _data[relType][0];
+          if (relMeta) {
+            if (relMeta.singular) {
+              _data[relType] = _data[relType][0];
+            }
           }
         }
       }
@@ -404,6 +397,27 @@ class JSONApi {
     } else {
       results.push(_data);
     }
+  }
+
+  _parseRelationships(_data, relType, relMeta, json, relData) {
+    if (_.isUndefined(relData.type)) {
+      return 'ERR_JSONAPI_PARSE_MISSING_RELATIONSHIP_TYPE';
+    }
+
+    if (_.isUndefined(relData.id)) {
+      return 'ERR_JSONAPI_PARSE_MISSING_RELATIONSHIP_ID';
+    }
+
+    let includedData = _.find(json.included, {
+      type: relData.type,
+      id: relData.id
+    });
+
+    if (_.isUndefined(_data[relType])) {
+      _data[relType] = [];
+    }
+
+    this._parse(includedData, json, _data[relType], false, true);
   }
 }
 

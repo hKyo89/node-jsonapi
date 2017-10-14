@@ -159,9 +159,116 @@ let json = {
   ]
 };
 
+const jsonMultiRelationships = {
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"data": [{
+		"type": "subscription",
+		"id": "1",
+		"attributes": {
+			"title": "HD",
+			"description": "This is the description.",
+			"permission": 2,
+			"chargingBase": 1,
+			"maxQty": 12,
+			"price": 35000,
+			"currency": "idr",
+			"order": 20,
+			"default": true,
+			"icon": "https://url/to/icon",
+			"enabled": true,
+			"baseColor": "#ff0000",
+			"textColor": "#000000"
+		},
+		"relationships": {
+			"playlist": {
+				"data": [{
+						"type": "playlist",
+						"id": "PL5"
+					},
+					{
+						"type": "playlist",
+						"id": "PL9"
+					}
+				]
+			},
+			"promo": {
+				"data": [{
+					"type": "promo",
+					"id": 1
+				}]
+			},
+			"quality": {
+				"data": [{
+						"type": "quality",
+						"id": 1
+					},
+					{
+						"type": "quality",
+						"id": 2
+					}
+				]
+			}
+		}
+	}],
+	"included": [{
+			"type": "playlist",
+			"id": "PL9",
+			"attributes": {
+				"name": "La Liga 2017-2018"
+			}
+		}, {
+			"type": "playlist",
+			"id": "PL5",
+			"attributes": {
+				"name": "La Liga"
+			}
+		},
+		{
+			"type": "quality",
+			"id": 1,
+			"attributes": {
+				"name": "SD",
+				"width": 1024,
+				"height": 576
+			}
+		},
+		{
+			"type": "quality",
+			"id": 2,
+			"attributes": {
+				"name": "HD",
+				"width": 1280,
+				"height": 720
+			}
+		},
+		{
+			"type": "playlist",
+			"id": 2,
+			"attributes": {
+				"name": "HD",
+				"maxResolution": "720p"
+			}
+		},
+		{
+			"type": "promo",
+			"id": 1,
+			"attributes": {
+				"type": "PERCENTOFF",
+				"title": "12 Month Disc. 12.5%",
+				"amount": 12.5,
+				"minQty": 12
+			}
+		}
+	]
+};
+
+
 // API.build(options)
 // API.build(options)
-API.parse(json)
+// API.parse(json)
+API.parse(jsonMultiRelationships)
 // API.error(errors)
   .then((data) => {
   console.log(JSON.stringify(data, null, 2));
