@@ -370,6 +370,14 @@ class JSONApi {
           let relMeta = row[col][relType].meta;
 
           if (_.isPlainObject(relData)) {
+            if (_.isUndefined(relMeta)) {
+              relMeta = {};
+            }
+
+            if (_.isUndefined(relMeta.singular)) {
+              relMeta.singular = true;
+            }
+            
             this._parseRelationships(_data, relType, relMeta, json, relData);
           }
 
