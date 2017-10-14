@@ -305,13 +305,22 @@ class JSONApi {
     }
 
     let results = {};
+    let error;
 
     if (_.isArray(json.data)) {
       for (let row of json.data) {
-        this._parse(row, json, results, false);
+        error = this._parse(row, json, results, false);
+
+        if (!_.isUndefined(error)) {
+          return error;
+        }
       }
     } else {
-      this._parse(json.data, json, results, true);
+      error = this._parse(json.data, json, results, true);
+
+      if (!_.isUndefined(error)) {
+        return error;
+      }
     }
 
     return Promise.resolve(results);

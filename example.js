@@ -160,8 +160,8 @@ let json = {
 };
 
 // API.build(options)
-API.build(options)
-// API.parse(json)
+// API.build(options)
+API.parse(json)
 // API.error(errors)
   .then((data) => {
   console.log(JSON.stringify(data, null, 2));
